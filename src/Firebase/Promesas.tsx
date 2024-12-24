@@ -1,1 +1,1 @@
-import { db } from "./Firebase";
+//import { bd } from "./Firebase.js";

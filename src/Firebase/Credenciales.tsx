@@ -1,4 +1,4 @@
-export const Credenciales={
+export const firebaseConfig={
     apiKey: "AIzaSyA58bSrTuTx7QMfwn6YCtNkwXMIPQjKeKg",
     authDomain: "frontend4-73160.firebaseapp.com",
     projectId: "frontend4-73160",

@@ -2,8 +2,10 @@ import React, { useContext } from "react";
 import Login from "./pages/Componentes/Login";
 import { AuthContext } from "./pages/Componentes/AuthContext";
 
-const App: React.FC = () => {
+export const App: React.FC = () => {
   const { isAuthenticated } = useContext(AuthContext);
+
+  console.log("Estado de autenticación en App:", isAuthenticated); // Depuración
 
   return (
     <div>
@@ -16,4 +18,3 @@ const App: React.FC = () => {
   );
 };
 
-export default App;

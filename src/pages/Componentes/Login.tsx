@@ -8,8 +8,10 @@ const Login: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Datos ingresados:", username, password); // Log credenciales
     login(username, password);
   };
+  
 
   return (
     <div className="login-container">
