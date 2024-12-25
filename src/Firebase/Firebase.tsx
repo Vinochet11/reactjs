@@ -1,6 +1,7 @@
-import { firebaseConfig } from "./Credenciales.js";
-//import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-//import { getFirestore } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import { initializeApp } from "firebase/app";
+import { firebaseConfig } from "./Credenciales";
+import { getFirestore } from "firebase/firestore";
 
-//const app = initializeApp(firebaseConfig);
-//export const bd = getFirestore(app)
+
+const app = initializeApp(firebaseConfig);
+export const db = getFirestore(app);
