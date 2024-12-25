@@ -6,52 +6,38 @@ import VisualizarRegistros from "./pages/MostrarRegistro";
 import Login from "./pages/Componentes/Login";
 
 const App: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // Controla si el usuario está autenticado
-  const [currentRoute, setCurrentRoute] = useState<string>(window.location.pathname);
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Estado de autenticación
+  const [currentRoute, setCurrentRoute] = useState<string>("/");
 
+  // Función para manejar el inicio de sesión
   const handleLogin = (username: string, password: string) => {
     if (username === "admin" && password === "admin") {
       setIsAuthenticated(true);
-      setCurrentRoute("/"); // Redirige al menú principal
+      setCurrentRoute("/menu"); // Redirige al menú principal
     } else {
       alert("Credenciales incorrectas.");
     }
   };
 
+  // Renderizado de las páginas según la ruta actual
   const renderPage = () => {
-    if (!isAuthenticated) {
-      return <Login onLogin={handleLogin} />;
-    }
-
     switch (currentRoute) {
+      case "/menu":
+        return <Menu onNavigate={setCurrentRoute} />;
       case "/registrar-usuario":
         return <RegistrarUsuario />;
       case "/registrar-licencia":
         return <RegistrarLicencia />;
       case "/visualizar-registros":
         return <VisualizarRegistros />;
-      case "/salir":
-        setIsAuthenticated(false); // Cierra sesión
-        return <h1>Saliendo...</h1>;
       default:
-        return <h1>Bienvenido al sistema de Registro Civil</h1>;
+        return <Login onLogin={handleLogin} />;
     }
   };
 
-  React.useEffect(() => {
-    const handlePopState = () => {
-      setCurrentRoute(window.location.pathname);
-    };
-
-    window.addEventListener("popstate", handlePopState);
-    return () => {
-      window.removeEventListener("popstate", handlePopState);
-    };
-  }, []);
-
   return (
     <div>
-      {isAuthenticated && <Menu />}
+      <h1>Sistema de Registro Civil</h1>
       {renderPage()}
     </div>
   );
