@@ -1,5 +1,6 @@
 import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { db } from "./Firebase";
+import { idText } from "typescript";
 
 export const crearUsuario = async(usuarios:{name:string; email:string}) => {
     try{
@@ -11,6 +12,19 @@ export const crearUsuario = async(usuarios:{name:string; email:string}) => {
         throw error;
     }
 };
+
+export const RegistrarLicenciaa = async(usuarios:{name:string; email:string}) => {
+    try{
+        const docRef = await addDoc(collection(db,"Licencias"),usuarios);
+        console.log("Licencia Registrada con el id:",docRef.id);
+        return docRef.id;
+    } catch(error){
+        console.error("error registrando licencia",error)
+        throw error;
+    }
+};
+
+
 
 export const obtenerUsuarios = async () => {
     try {
@@ -25,3 +39,13 @@ export const obtenerUsuarios = async () => {
         throw error;
     }
 };
+
+export const actualizarUsuario = async (id:string,data:{name:string; email:string} )=>{
+    try{
+        const userRef=doc(db,"usuarios",id);
+        await updateDoc(userRef,data);
+        console.log("Usuario Actualizado",id);
+    }catch(error){
+        console.error("Error Actualizando Usuario:",error);
+        throw error;
+    }};

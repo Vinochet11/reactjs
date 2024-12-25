@@ -3,6 +3,7 @@ import Menu from "./pages/Componentes/Menu";
 import RegistrarUsuario from "./pages/RegistrarUsuario";
 import RegistrarLicencia from "./pages/RegistrarLicencia";
 import VisualizarRegistros from "./pages/MostrarRegistro";
+import ActualizarUsuario from "./pages/ActualizarUsuario";
 import Login from "./pages/Componentes/Login";
 
 const App: React.FC = () => {
@@ -27,13 +28,16 @@ const App: React.FC = () => {
       case "/registrar-usuario":
         return <RegistrarUsuario onNavigate={setCurrentRoute} />;
       case "/registrar-licencia":
-        return <RegistrarLicencia />;
+        return <RegistrarLicencia onNavigate={setCurrentRoute}/>;
       case "/visualizar-registros":
-        return <VisualizarRegistros onNavigate={setCurrentRoute} />; // Agregamos onNavigate
+        return <VisualizarRegistros onNavigate={setCurrentRoute}/>;
+      case "/actualizar-usuario":
+        return <ActualizarUsuario onNavigate={setCurrentRoute} />;
       default:
         return <Login onLogin={handleLogin} />;
     }
   };
+  
   
   
 
