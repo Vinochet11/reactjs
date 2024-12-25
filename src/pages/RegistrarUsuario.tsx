@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { crearUsuario } from "../Firebase/Promesas";
 
-const RegistrarUsuario: React.FC = () => {
+
+const RegistrarUsuario: React.FC<{ onNavigate: (route: string) => void }> = ({ onNavigate }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -9,18 +10,20 @@ const RegistrarUsuario: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
-      const userId = await crearUsuario({ name, email }); // Pasar objeto con 'name' y 'email'
+      const userId = await crearUsuario({ name, email }); // Asegúrate de que `crearUsuario` se importe correctamente.
       alert(`Usuario creado con éxito. ID: ${userId}`);
       setName("");
       setEmail("");
+      onNavigate("/menu"); // Redirige al menú después de un registro exitoso.
     } catch (error) {
       alert("Error al registrar usuario. Intenta nuevamente.");
+      console.error("Error:", error);
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="container mt-5">
@@ -50,6 +53,13 @@ const RegistrarUsuario: React.FC = () => {
         </div>
         <button type="submit" className="btn btn-primary" disabled={loading}>
           {loading ? "Guardando..." : "Registrar"}
+        </button>
+        <button
+          type="button"
+          className="btn btn-secondary ms-2"
+          onClick={() => onNavigate("/menu")}
+        >
+          Volver al Menú
         </button>
       </form>
     </div>

@@ -11,3 +11,17 @@ export const crearUsuario = async(usuarios:{name:string; email:string}) => {
         throw error;
     }
 };
+
+export const obtenerUsuarios = async () => {
+    try {
+        const querySnapshot = await getDocs(collection(db, "usuarios"));
+        const usuarios: { id: string; name: string; email: string }[] = [];
+        querySnapshot.forEach((doc) => {
+            usuarios.push({ id: doc.id, ...(doc.data() as { name: string; email: string }) });
+        });
+        return usuarios;
+    } catch (error) {
+        console.error("Error obteniendo usuarios:", error);
+        throw error;
+    }
+};

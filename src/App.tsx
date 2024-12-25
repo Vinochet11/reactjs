@@ -25,15 +25,17 @@ const App: React.FC = () => {
       case "/menu":
         return <Menu onNavigate={setCurrentRoute} />;
       case "/registrar-usuario":
-        return <RegistrarUsuario />;
+        return <RegistrarUsuario onNavigate={setCurrentRoute} />;
       case "/registrar-licencia":
         return <RegistrarLicencia />;
       case "/visualizar-registros":
-        return <VisualizarRegistros />;
+        return <VisualizarRegistros onNavigate={setCurrentRoute} />; // Agregamos onNavigate
       default:
         return <Login onLogin={handleLogin} />;
     }
   };
+  
+  
 
   return (
     <div>
