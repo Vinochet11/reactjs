@@ -1,52 +1,49 @@
-import React, { useEffect, useState } from "react";
-import { obtenerUsuarios, eliminarUsuario } from "../Firebase/Promesas";
+import React, { useState, useEffect } from "react";
+import { obtenerUsuarios, obtenerLicencias } from "../Firebase/Promesas";
 
 const MostrarRegistro: React.FC<{ onNavigate: (route: string) => void }> = ({ onNavigate }) => {
-  const [usuarios, setUsuarios] = useState<
-    {
-      id: string;
-      nombre: string;
-      apellido: string;
-      rut: string;
-      direccion: string;
-      telefono: string;
-      fechaNacimiento: string;
-      genero: string;
-      profesion: string;
-    }[]
-  >([]);
+  const [usuarios, setUsuarios] = useState<{
+    id: string;
+    nombre: string;
+    apellido: string;
+    rut: string;
+    direccion: string;
+    telefono: string;
+    fechaNacimiento: string;
+    genero: string;
+    profesion: string;
+    tipoLicencia?: string;
+  }[]>([]);
 
   useEffect(() => {
-    const fetchUsuarios = async () => {
+    const fetchData = async () => {
       try {
-        const usuariosObtenidos = await obtenerUsuarios();
-        setUsuarios(usuariosObtenidos);
+        const usuariosData = await obtenerUsuarios();
+        const licenciasData = await obtenerLicencias();
+
+        const usuariosConLicencia = usuariosData.map((usuario) => {
+          const licencia = licenciasData.find(
+            (lic) => lic.usuarioId === usuario.id
+          );
+          return {
+            ...usuario,
+            tipoLicencia: licencia ? licencia.categoria : "Sin licencia", // Aquí usamos "categoria" para el tipo de licencia
+          };
+        });
+
+        setUsuarios(usuariosConLicencia);
       } catch (error) {
-        console.error("Error al obtener los usuarios:", error);
+        console.error("Error al obtener registros:", error);
       }
     };
 
-    fetchUsuarios();
+    fetchData();
   }, []);
-
-  const handleEliminar = async (id: string) => {
-    const confirmar = window.confirm("¿Estás seguro de que deseas eliminar este usuario?");
-    if (confirmar) {
-      try {
-        await eliminarUsuario(id);
-        setUsuarios(usuarios.filter((usuario) => usuario.id !== id));
-        alert("Usuario eliminado con éxito.");
-      } catch (error) {
-        console.error("Error al eliminar usuario:", error);
-        alert("Hubo un error al eliminar el usuario. Intenta de nuevo.");
-      }
-    }
-  };
 
   return (
     <div className="container mt-5">
-      <h2>Visualizar Registros</h2>
-      <table className="table table-striped">
+      <h2>Registros de Usuarios</h2>
+      <table className="table">
         <thead>
           <tr>
             <th>Nombre</th>
@@ -57,7 +54,7 @@ const MostrarRegistro: React.FC<{ onNavigate: (route: string) => void }> = ({ on
             <th>Fecha de Nacimiento</th>
             <th>Género</th>
             <th>Profesión</th>
-            <th>Acciones</th>
+            <th>Tipo de Licencia</th>
           </tr>
         </thead>
         <tbody>
@@ -71,18 +68,12 @@ const MostrarRegistro: React.FC<{ onNavigate: (route: string) => void }> = ({ on
               <td>{usuario.fechaNacimiento}</td>
               <td>{usuario.genero}</td>
               <td>{usuario.profesion}</td>
-              <td>
-                <button
-                  className="btn btn-danger btn-sm"
-                  onClick={() => handleEliminar(usuario.id)}
-                >
-                  Eliminar
-                </button>
-              </td>
+              <td>{usuario.tipoLicencia || "Sin licencia"}</td>
             </tr>
           ))}
         </tbody>
       </table>
+
       <button
         className="btn btn-secondary mt-3"
         onClick={() => onNavigate("/menu")}

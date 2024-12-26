@@ -66,6 +66,26 @@ export const obtenerUsuarios = async () => {
     }
   };
   
+  export const obtenerLicencias = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "Licencias"));
+      const licencias: {
+        usuarioId: string;
+        categoria: string; // Ajuste aquí para reflejar el campo correcto
+      }[] = [];
+      querySnapshot.forEach((doc) => {
+        licencias.push({
+          usuarioId: doc.data().usuarioId,
+          categoria: doc.data().categoria, // Asegúrate de usar el nombre correcto del campo en la base de datos
+        });
+      });
+      return licencias;
+    } catch (error) {
+      console.error("Error obteniendo licencias:", error);
+      throw error;
+    }
+  };
+  
 
   export const actualizarUsuario = async (
     id: string,
