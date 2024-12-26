@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { obtenerUsuarios, obtenerLicencias } from "../Firebase/Promesas";
+import { obtenerUsuarios, obtenerLicencias, eliminarUsuario } from "../Firebase/Promesas";
 
 const MostrarRegistro: React.FC<{ onNavigate: (route: string) => void }> = ({ onNavigate }) => {
-  const [usuarios, setUsuarios] = useState<{
-    id: string;
-    nombre: string;
-    apellido: string;
-    rut: string;
-    direccion: string;
-    telefono: string;
-    fechaNacimiento: string;
-    genero: string;
-    profesion: string;
-    tipoLicencia?: string;
-  }[]>([]);
+  const [usuarios, setUsuarios] = useState<
+    {
+      id: string;
+      nombre: string;
+      apellido: string;
+      rut: string;
+      direccion: string;
+      telefono: string;
+      fechaNacimiento: string;
+      genero: string;
+      profesion: string;
+      tipoLicencia?: string;
+    }[]
+  >([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,7 +29,7 @@ const MostrarRegistro: React.FC<{ onNavigate: (route: string) => void }> = ({ on
           );
           return {
             ...usuario,
-            tipoLicencia: licencia ? licencia.categoria : "Sin licencia", // Aquí usamos "categoria" para el tipo de licencia
+            tipoLicencia: licencia ? licencia.categoria : "Sin licencia", // Cambia tipoLicencia por categoria
           };
         });
 
@@ -39,6 +41,22 @@ const MostrarRegistro: React.FC<{ onNavigate: (route: string) => void }> = ({ on
 
     fetchData();
   }, []);
+
+  const handleEliminar = async (usuarioId: string) => {
+    const confirmar = window.confirm("¿Estás seguro de que deseas eliminar este usuario y su licencia?");
+    if (confirmar) {
+      try {
+        await eliminarUsuario(usuarioId);
+        setUsuarios((prevUsuarios) =>
+          prevUsuarios.filter((usuario) => usuario.id !== usuarioId)
+        );
+        alert("Usuario y licencia eliminados con éxito.");
+      } catch (error) {
+        console.error("Error al eliminar usuario y licencia:", error);
+        alert("Ocurrió un error al intentar eliminar el usuario y su licencia.");
+      }
+    }
+  };
 
   return (
     <div className="container mt-5">
@@ -55,6 +73,7 @@ const MostrarRegistro: React.FC<{ onNavigate: (route: string) => void }> = ({ on
             <th>Género</th>
             <th>Profesión</th>
             <th>Tipo de Licencia</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -69,6 +88,14 @@ const MostrarRegistro: React.FC<{ onNavigate: (route: string) => void }> = ({ on
               <td>{usuario.genero}</td>
               <td>{usuario.profesion}</td>
               <td>{usuario.tipoLicencia || "Sin licencia"}</td>
+              <td>
+                <button
+                  className="btn btn-danger"
+                  onClick={() => handleEliminar(usuario.id)}
+                >
+                  Eliminar
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>

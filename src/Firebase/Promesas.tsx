@@ -111,13 +111,26 @@ export const obtenerUsuarios = async () => {
   };
 
 
-export const eliminarUsuario = async (id: string) => {
-  try {
-    const docRef = doc(db, "usuarios", id);
-    await deleteDoc(docRef);
-    console.log(`Usuario con ID: ${id} eliminado.`);
-  } catch (error) {
-    console.error("Error eliminando usuario:", error);
-    throw error;
-  }
-};
+  export const eliminarUsuario = async (id: string) => {
+    try {
+      // Eliminar usuario
+      const userDoc = doc(db, "usuarios", id);
+      await deleteDoc(userDoc);
+  
+      // Eliminar licencia asociada
+      const licenciasQuery = query(
+        collection(db, "Licencias"),
+        where("usuarioId", "==", id)
+      );
+      const licenciasSnapshot = await getDocs(licenciasQuery);
+      licenciasSnapshot.forEach(async (licenciaDoc) => {
+        await deleteDoc(doc(db, "Licencias", licenciaDoc.id));
+      });
+  
+      console.log(`Usuario y licencia con ID: ${id} eliminados.`);
+    } catch (error) {
+      console.error("Error eliminando usuario y licencia:", error);
+      throw error;
+    }
+  };
+  
