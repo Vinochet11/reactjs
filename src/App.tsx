@@ -5,6 +5,8 @@ import RegistrarLicencia from "./pages/RegistrarLicencia";
 import ActualizarUsuario from "./pages/ActualizarUsuario";
 import MostrarRegistro from "./pages/MostrarRegistro";
 import Login from "./pages/Componentes/Login";
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -39,7 +41,7 @@ const App: React.FC = () => {
 
   return (
     <div>
-      <h1>Sistema de Registro Civil</h1>
+      
       {renderPage()}
     </div>
   );
