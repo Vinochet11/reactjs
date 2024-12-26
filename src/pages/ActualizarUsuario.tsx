@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { obtenerUsuarios, actualizarUsuario } from "../Firebase/Promesas";
 
 const ActualizarUsuario: React.FC<{ onNavigate: (route: string) => void }> = ({ onNavigate }) => {
@@ -15,7 +15,20 @@ const ActualizarUsuario: React.FC<{ onNavigate: (route: string) => void }> = ({ 
       profesion: string;
     }[]
   >([]);
-  const [usuarioSeleccionado, setUsuarioSeleccionado] = useState<string | null>(null);
+  const [usuarioSeleccionado, setUsuarioSeleccionado] = useState<
+    | {
+        id: string;
+        nombre: string;
+        apellido: string;
+        rut: string;
+        direccion: string;
+        telefono: string;
+        fechaNacimiento: string;
+        genero: string;
+        profesion: string;
+      }
+    | null
+  >(null);
   const [formData, setFormData] = useState({
     nombre: "",
     apellido: "",
@@ -35,19 +48,15 @@ const ActualizarUsuario: React.FC<{ onNavigate: (route: string) => void }> = ({ 
     fetchUsuarios();
   }, []);
 
-  const handleEditar = (id: string) => {
-    const usuario = usuarios.find((u) => u.id === id);
-    if (usuario) {
-      setUsuarioSeleccionado(id);
-      setFormData({ ...usuario });
-    }
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleActualizarUsuario = async () => {
     if (usuarioSeleccionado) {
       try {
-        await actualizarUsuario(usuarioSeleccionado, formData);
+        await actualizarUsuario(usuarioSeleccionado.id, formData);
         alert("Usuario actualizado con éxito.");
         setUsuarioSeleccionado(null);
         setFormData({
@@ -60,153 +69,170 @@ const ActualizarUsuario: React.FC<{ onNavigate: (route: string) => void }> = ({ 
           genero: "",
           profesion: "",
         });
-        const updatedUsuarios = await obtenerUsuarios();
-        setUsuarios(updatedUsuarios);
+        const data = await obtenerUsuarios();
+        setUsuarios(data);
       } catch (error) {
         console.error("Error al actualizar usuario:", error);
-        alert("Hubo un error al actualizar el usuario.");
       }
     }
   };
 
   return (
     <div className="container mt-5">
-      <h2>Actualizar Usuarios</h2>
-      <table className="table table-striped">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Apellido</th>
-            <th>RUT</th>
-            <th>Dirección</th>
-            <th>Teléfono</th>
-            <th>Fecha de Nacimiento</th>
-            <th>Género</th>
-            <th>Profesión</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {usuarios.map((usuario) => (
-            <tr key={usuario.id}>
-              <td>{usuario.nombre}</td>
-              <td>{usuario.apellido}</td>
-              <td>{usuario.rut}</td>
-              <td>{usuario.direccion}</td>
-              <td>{usuario.telefono}</td>
-              <td>{usuario.fechaNacimiento}</td>
-              <td>{usuario.genero}</td>
-              <td>{usuario.profesion}</td>
-              <td>
-                <button
-                  className="btn btn-primary btn-sm"
-                  onClick={() => handleEditar(usuario.id)}
-                >
-                  Editar
-                </button>
-              </td>
-            </tr>
+      <h2>Actualizar Usuario</h2>
+      <div className="mb-3">
+        <label htmlFor="usuarioSeleccionado" className="form-label">
+          Selecciona un usuario
+        </label>
+        <select
+          id="usuarioSeleccionado"
+          className="form-select"
+          value={usuarioSeleccionado?.id || ""}
+          onChange={(e) => {
+            const selectedUser = usuarios.find((user) => user.id === e.target.value) || null;
+            setUsuarioSeleccionado(selectedUser);
+            if (selectedUser) {
+              setFormData({
+                nombre: selectedUser.nombre,
+                apellido: selectedUser.apellido,
+                rut: selectedUser.rut,
+                direccion: selectedUser.direccion,
+                telefono: selectedUser.telefono,
+                fechaNacimiento: selectedUser.fechaNacimiento,
+                genero: selectedUser.genero,
+                profesion: selectedUser.profesion,
+              });
+            }
+          }}
+        >
+          <option value="">Selecciona un usuario</option>
+          {usuarios.map((user) => (
+            <option key={user.id} value={user.id}>
+              {user.nombre} {user.apellido}
+            </option>
           ))}
-        </tbody>
-      </table>
+        </select>
+      </div>
 
       {usuarioSeleccionado && (
-        <form onSubmit={handleSubmit} className="mt-4">
-          <h3>Editar Usuario</h3>
+        <form>
           <div className="mb-3">
-            <label className="form-label">Nombre</label>
+            <label htmlFor="nombre" className="form-label">
+              Nombre
+            </label>
             <input
               type="text"
+              id="nombre"
+              name="nombre"
               className="form-control"
               value={formData.nombre}
-              onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-              required
+              onChange={handleInputChange}
             />
           </div>
           <div className="mb-3">
-            <label className="form-label">Apellido</label>
+            <label htmlFor="apellido" className="form-label">
+              Apellido
+            </label>
             <input
               type="text"
+              id="apellido"
+              name="apellido"
               className="form-control"
               value={formData.apellido}
-              onChange={(e) => setFormData({ ...formData, apellido: e.target.value })}
-              required
+              onChange={handleInputChange}
             />
           </div>
           <div className="mb-3">
-            <label className="form-label">RUT</label>
+            <label htmlFor="rut" className="form-label">
+              RUT
+            </label>
             <input
               type="text"
+              id="rut"
+              name="rut"
               className="form-control"
               value={formData.rut}
-              onChange={(e) => setFormData({ ...formData, rut: e.target.value })}
-              required
+              onChange={handleInputChange}
             />
           </div>
           <div className="mb-3">
-            <label className="form-label">Dirección</label>
+            <label htmlFor="direccion" className="form-label">
+              Dirección
+            </label>
             <input
               type="text"
+              id="direccion"
+              name="direccion"
               className="form-control"
               value={formData.direccion}
-              onChange={(e) => setFormData({ ...formData, direccion: e.target.value })}
-              required
+              onChange={handleInputChange}
             />
           </div>
           <div className="mb-3">
-            <label className="form-label">Teléfono</label>
+            <label htmlFor="telefono" className="form-label">
+              Teléfono
+            </label>
             <input
               type="text"
+              id="telefono"
+              name="telefono"
               className="form-control"
               value={formData.telefono}
-              onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
-              required
+              onChange={handleInputChange}
             />
           </div>
           <div className="mb-3">
-            <label className="form-label">Fecha de Nacimiento</label>
+            <label htmlFor="fechaNacimiento" className="form-label">
+              Fecha de Nacimiento
+            </label>
             <input
               type="date"
+              id="fechaNacimiento"
+              name="fechaNacimiento"
               className="form-control"
               value={formData.fechaNacimiento}
-              onChange={(e) =>
-                setFormData({ ...formData, fechaNacimiento: e.target.value })
-              }
-              required
+              onChange={handleInputChange}
             />
           </div>
           <div className="mb-3">
-            <label className="form-label">Género</label>
-            <input
-              type="text"
-              className="form-control"
+            <label htmlFor="genero" className="form-label">
+              Género
+            </label>
+            <select
+              id="genero"
+              name="genero"
+              className="form-select"
               value={formData.genero}
-              onChange={(e) => setFormData({ ...formData, genero: e.target.value })}
-              required
-            />
+              onChange={handleInputChange}
+            >
+              <option value="">Selecciona un género</option>
+              <option value="Masculino">Masculino</option>
+              <option value="Femenino">Femenino</option>
+              <option value="Otro">Otro</option>
+            </select>
           </div>
           <div className="mb-3">
-            <label className="form-label">Profesión</label>
+            <label htmlFor="profesion" className="form-label">
+              Profesión
+            </label>
             <input
               type="text"
+              id="profesion"
+              name="profesion"
               className="form-control"
               value={formData.profesion}
-              onChange={(e) => setFormData({ ...formData, profesion: e.target.value })}
-              required
+              onChange={handleInputChange}
             />
           </div>
-          <button type="submit" className="btn btn-success">
-            Guardar Cambios
-          </button>
-          <button
-            type="button"
-            className="btn btn-secondary ms-3"
-            onClick={() => setUsuarioSeleccionado(null)}
-          >
-            Cancelar
+          <button type="button" className="btn btn-primary" onClick={handleActualizarUsuario}>
+            Actualizar Usuario
           </button>
         </form>
       )}
+
+      <button type="button" className="btn btn-secondary mt-3" onClick={() => onNavigate("/menu")}>
+        Volver al Menú
+      </button>
     </div>
   );
 };
